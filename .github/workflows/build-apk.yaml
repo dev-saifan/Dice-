@@ -23,19 +23,36 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Initialize Capacitor Project in Cloud
+    - name: Install Dependencies
       run: |
-        npm init -y
         npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/assets
-        npx cap init "Dice Roller" com.diceroller.app --web-dir www
 
-    - name: Sync Web Assets & Generate Icons
+    - name: Create Capacitor Config
+      run: |
+        cat << 'EOF' > capacitor.config.json
+        {
+          "appId": "com.diceroller.app",
+          "appName": "Dice Roller",
+          "webDir": "www",
+          "bundledWebRuntime": false
+        }
+        EOF
+
+    - name: Add Android Platform & Sync
       run: |
         npx cap add android
         npx cap sync android
-        npx @capacitor/assets generate --iconAsset www/dice.png --android
 
-    - name: Wipe Corrupted Gradle Caches
+    - name: Prepare App Icon Assets
+      run: |
+        mkdir -p assets
+        cp www/dice.png assets/icon-only.png
+
+    - name: Generate App Icons
+      run: |
+        npx @capacitor/assets generate --android
+
+    - name: Clear Gradle Caches
       run: |
         rm -rf /home/runner/.gradle/caches/
         rm -rf /home/runner/.gradle/wrapper/
