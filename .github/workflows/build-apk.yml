@@ -25,6 +25,10 @@ jobs:
         channel: 'stable'
         cache: true
 
+    # This line auto-generates the missing Android platform files cleanly
+    - name: Create Android Scaffolding
+      run: flutter create --platforms=android . --org com.dice.app
+
     - name: Install Dependencies
       run: flutter pub get
 
